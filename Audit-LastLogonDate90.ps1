@@ -1,0 +1,3 @@
+﻿#query all enabled staff who havent logged in for over 90 days and pull details for admin to follow-up on
+
+Get-ADUser -Server <FQDNSERVERNAME> -Credential (Get-Credential -Credential <USERNAME>) -Filter {(userprincipalname -like "*@<STAFFDOMAIN>") -AND (enabled -eq $true)} -Properties lastlogondate,description,manager,assistant | Where-Object -FilterScript {($_.lastlogondate -le ((Get-Date).AddDays(-90))) -AND ($_.distinguishedname -notlike "*student*")} | Select-Object -Property name,surname,givenname,enabled,lastlogondate,userprincipalname,distinguishedname,description,manager,assistant | Sort-Object -Property lastlogondate -Descending | Export-Csv -Path c:\scripts\<DISTRICT>_lastlogon_90_$(Get-Date -Format MMddyy).csv -NoTypeInformation
